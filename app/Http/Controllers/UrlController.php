@@ -16,9 +16,9 @@ class UrlController extends Controller
         return response()->json($urls);
     }
 
-    public function single_url($id)
+    public function single_url($shortCode)
     {
-        $url = Url::find($id);
+        $url = Url::where('short_url', $shortCode)->firstOrFail();
         return response()->json($url);
     }
 
@@ -36,7 +36,18 @@ class UrlController extends Controller
     public function update(Request $request, $id)
     {
         $url = Url::find($id);
-        $url->url = $request->url;
+        if ($request->has('long_url')) {
+            $url->long_url = $request->long_url;
+        }
+        if ($request->has('short_url')) {
+            $url->short_url = $request->short_url;
+        }
+        if ($request->has('title')) {
+            $url->title = $request->title;
+        }
+        if ($request->has('user_id')) {
+            $url->user_id = $request->user_id;
+        }
         $url->save();
         return response()->json($url);
     }
@@ -46,5 +57,18 @@ class UrlController extends Controller
         $url = Url::find($id);
         $url->delete();
         return response()->json(['status' => 'ok']);
+    }
+
+    public static function sendit($shortCode)
+    {
+        $url = Url::where('short_url', $shortCode)->firstOrFail();
+
+        if (!$url) {
+            return abort(404);
+        }
+
+        $scheme = request()->getHost() == 'localhost' ? 'http' : 'https';
+        $url->long_url = $scheme . '://' . $url->long_url;
+        return redirect($url->long_url);
     }
 }
