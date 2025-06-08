@@ -6,12 +6,13 @@ use App\Http\Controllers\UrlController;
 
 Route::get('/urls', [UrlController::class, 'index']);
 Route::get('/urls/{shortCode}', [UrlController::class, 'single_url']);
+Route::post('/urls', [UrlController::class, 'add']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
-    Route::post('/urls', [UrlController::class, 'add']);
-    Route::put('/urls/{id}', [UrlController::class, 'update']);
-    Route::delete('/urls/{id}', [UrlController::class, 'delete']);
+  Route::get('/user', function (Request $request) {
+    return $request->user();
+  });
+
+  Route::put('/urls/{id}', [UrlController::class, 'update']);
+  Route::delete('/urls/{id}', [UrlController::class, 'delete']);
 });
